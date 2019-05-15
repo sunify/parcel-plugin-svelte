@@ -3,13 +3,16 @@ const path = require('path');
 const { version } = require('svelte/package.json');
 const major_version = +version[0];
 
-const { compile, preprocess } = major_version >= 3 ? require('svelte/compiler.js') : require('svelte');
+const { compile, preprocess } =
+  major_version >= 3 ? require('svelte/compiler.js') : require('svelte');
 
 const { Asset } = require('./parcel-adapter');
 const { sanitize, capitalize } = require('./utils');
 
 function makeHot(id, code, asset) {
-  const hotApiRequire = path.relative(path.dirname(asset.name), require.resolve('./hot-api')).replace(/\\/g, '/');
+  const hotApiRequire = path
+    .relative(path.dirname(asset.name), require.resolve('./hot-api'))
+    .replace(/\\/g, '/');
 
   const replacement = `
     if (module.hot) {
@@ -30,7 +33,10 @@ function makeHot(id, code, asset) {
     module.exports = $3;
   `;
 
-  return code.replace(/((module.exports =|export default) ([^;]*));/, replacement);
+  return code.replace(
+    /((module.exports =|export default) ([^;]*));/,
+    replacement
+  );
 }
 
 class SvelteAsset extends Asset {
@@ -40,7 +46,12 @@ class SvelteAsset extends Asset {
   }
 
   async getConfig() {
-    let config = (await super.getConfig(['.svelterc', 'svelte.config.js', 'package.json'])) || {};
+    let config =
+      (await super.getConfig([
+        '.svelterc',
+        'svelte.config.js',
+        'package.json'
+      ])) || {};
     config = config.svelte || config;
 
     let defaultOptions = {
@@ -66,7 +77,12 @@ class SvelteAsset extends Asset {
       name: capitalize(sanitize(this.relativeName))
     };
 
-    config.compilerOptions = Object.assign({}, defaultOptions, customCompilerOptions, fixedCompilerOptions);
+    config.compilerOptions = Object.assign(
+      {},
+      defaultOptions,
+      customCompilerOptions,
+      fixedCompilerOptions
+    );
 
     return config;
   }
